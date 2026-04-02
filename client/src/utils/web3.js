@@ -29,6 +29,8 @@ export const logToBlockchain = async () => {
   const tx = await signer.sendTransaction({
     to: await signer.getAddress(),
     value: ethers.parseEther("0.00001"),
+    maxFeePerGas: ethers.parseUnits("30", "gwei"),
+    maxPriorityFeePerGas: ethers.parseUnits("30", "gwei"),
   });
 
   await tx.wait();
