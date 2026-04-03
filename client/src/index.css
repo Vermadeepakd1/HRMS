@@ -3,15 +3,27 @@
 @tailwind utilities;
 
 :root {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #0f172a;
-  background-color: #f8fafc;
+  color: #1a2f4a;
+  background: #f8fafb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --bg: #f8fafb;
+  --panel: #ffffff;
+  --panel-strong: #ffffff;
+  --line: #d4dce4;
+  --ink: #1a2f4a;
+  --muted: #586b7e;
+  --soft: #f0f4f9;
+  --soft-strong: #e4ecf5;
+  --accent: #1566cc;
+  --accent-soft: #e8f1fa;
+  --shadow: 0 1px 2px rgba(26, 47, 74, 0.08);
 }
 
 html {
@@ -21,9 +33,8 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background:
-    radial-gradient(circle at top left, rgba(15, 23, 42, 0.08), transparent 32%),
-    linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  color: var(--ink);
+  background: var(--bg);
 }
 
 #root {
@@ -39,4 +50,185 @@ textarea,
 select,
 button {
   font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-shell {
+  position: relative;
+}
+
+.page-title {
+  letter-spacing: -0.03em;
+}
+
+.label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+
+.panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.page-wrap {
+  padding: 1.25rem 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .page-wrap {
+    padding: 1.5rem 1.75rem;
+  }
+}
+
+.page-header {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  padding: 1rem 1.1rem;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--soft);
+  padding: 0.3rem 0.65rem;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.section {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.section-head {
+  border-bottom: 1px solid var(--line);
+  padding: 0.95rem 1.1rem;
+}
+
+.section-body {
+  padding: 1rem 1.1rem;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--muted);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.icon-button:hover {
+  background: var(--soft);
+  color: var(--ink);
+}
+
+.field {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.65rem 0.8rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.field:focus {
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.15);
+}
+
+.button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  background: var(--accent);
+  color: white;
+  padding: 0.58rem 0.9rem;
+  font-weight: 600;
+  transition: transform 140ms ease, opacity 140ms ease, background-color 140ms ease;
+}
+
+.button-primary:hover {
+  background: #0f47a6;
+  transform: translateY(-1px);
+}
+
+.button-primary:disabled,
+.button-secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+}
+
+.button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: white;
+  color: #1a2f4a;
+  padding: 0.58rem 0.9rem;
+  font-weight: 600;
+  transition: transform 140ms ease, background-color 140ms ease;
+}
+
+.button-secondary:hover {
+  transform: translateY(-1px);
+  background: #f0f4f9;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  padding: 0.2rem 0.55rem;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.status-assigned {
+  border-color: #d4dce4;
+  background: #f0f4f9;
+  color: #586b7e;
+}
+
+.status-submitted {
+  border-color: #5fa9d3;
+  background: #e8f1fa;
+  color: #2c5aa0;
+}
+
+.status-approved {
+  border-color: #4db8a8;
+  background: #e8f5f2;
+  color: #1a5c52;
 }

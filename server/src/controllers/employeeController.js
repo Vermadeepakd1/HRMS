@@ -1,23 +1,11 @@
-import Employee from "../models/Employee.js";
-
-export const createEmployee = async (req, res) => {
-  try {
-    const employee = await Employee.create({
-      ...req.body,
-      createdBy: req.user.id,
-    });
-
-    res.status(201).json(employee);
-  } catch (error) {
-    res.status(500).json({ msg: "Server error" });
-  }
-};
+import User from "../models/User.js";
 
 export const getEmployees = async (req, res) => {
   try {
-    const employees = await Employee.find({
-      createdBy: req.user.id,
-    });
+    const employees = await User.find(
+      { role: "employee" },
+      { password: 0 },
+    ).sort({ createdAt: -1 });
 
     res.json(employees);
   } catch (error) {
@@ -27,26 +15,33 @@ export const getEmployees = async (req, res) => {
 
 export const updateEmployee = async (req, res) => {
   try {
-    const employee = await Employee.findOne({
+    const employee = await User.findOne({
       _id: req.params.id,
-      createdBy: req.user.id,
+      role: "employee",
     });
 
     if (!employee) {
       return res.status(404).json({ msg: "Employee not found" });
     }
 
-    const { name, role, department, skills, walletAddress } = req.body;
+    const { name, role, walletAddress } = req.body;
 
     if (name !== undefined) employee.name = name;
-    if (role !== undefined) employee.role = role;
-    if (department !== undefined) employee.department = department;
-    if (skills !== undefined) employee.skills = skills;
+    if (role !== undefined)
+      employee.role = role === "admin" ? "employee" : role;
     if (walletAddress !== undefined) employee.walletAddress = walletAddress;
 
     await employee.save();
 
-    res.json(employee);
+    res.json({
+      _id: employee._id,
+      name: employee.name,
+      email: employee.email,
+      role: employee.role,
+      walletAddress: employee.walletAddress,
+      createdAt: employee.createdAt,
+      updatedAt: employee.updatedAt,
+    });
   } catch (error) {
     res.status(500).json({ msg: "Server error" });
   }
@@ -54,9 +49,9 @@ export const updateEmployee = async (req, res) => {
 
 export const deleteEmployee = async (req, res) => {
   try {
-    const employee = await Employee.findOne({
+    const employee = await User.findOne({
       _id: req.params.id,
-      createdBy: req.user.id,
+      role: "employee",
     });
 
     if (!employee) {

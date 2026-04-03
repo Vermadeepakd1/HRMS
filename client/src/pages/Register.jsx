@@ -1,27 +1,37 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
+import { setAuthSession } from "../utils/auth";
+
+const initialForm = {
+    name: "",
+    email: "",
+    password: "",
+    walletAddress: "",
+};
 
 export default function Register() {
     const navigate = useNavigate();
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [form, setForm] = useState(initialForm);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleRegister = async (event) => {
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setForm((current) => ({ ...current, [name]: value }));
+    };
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
         setError("");
 
         try {
             const res = await API.post("/auth/register", {
-                name,
-                email,
-                password,
+                ...form,
+                role: "employee",
             });
-            localStorage.setItem("token", res.data.token);
+            setAuthSession(res.data);
             navigate("/dashboard");
         } catch (err) {
             setError(err.response?.data?.msg || "Registration failed");
@@ -31,57 +41,50 @@ export default function Register() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-white to-slate-200 px-4">
-            <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-8 shadow-[0_20px_80px_rgba(15,23,42,0.08)] sm:p-10">
-                <p className="text-sm font-medium uppercase tracking-[0.3em] text-slate-500">Admin setup</p>
-                <h1 className="mt-3 text-3xl font-semibold tracking-tight">Create account</h1>
-                <p className="mt-2 text-sm text-slate-500">Start the HRMS workspace with a secure admin login.</p>
+        <div className="app-shell min-h-screen px-4 py-6 sm:px-6 lg:px-8">
+            <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-6xl overflow-hidden section rounded-[16px] lg:grid-cols-[0.95fr_1.05fr]">
+                <section className="order-2 flex items-center p-8 lg:order-1 lg:p-10">
+                    <div className="w-full max-w-md">
+                        <p className="label">Create account</p>
+                        <h1 className="page-title mt-2.5 text-[1.7rem] font-semibold">Register employee access</h1>
+                        <p className="mt-1.5 text-sm text-[var(--muted)]">Employee accounts require a wallet address for payment logging.</p>
 
-                <form onSubmit={handleRegister} className="mt-8 space-y-4">
-                    <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">Name</label>
-                        <input
-                            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
+                        {error ? (
+                            <div className="mt-4 rounded-[12px] border border-[#fecaca] bg-[#fee2e2] px-4 py-3 text-sm text-[#991b1b]">{error}</div>
+                        ) : null}
+
+                        <form onSubmit={handleSubmit} className="mt-5 space-y-3">
+                            <input className="field" name="name" placeholder="Full name" value={form.name} onChange={handleChange} required />
+                            <input className="field" name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} required />
+                            <input className="field" name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} required />
+                            <input className="field" name="walletAddress" placeholder="Wallet address" value={form.walletAddress} onChange={handleChange} required />
+                            <button className="button-primary w-full" type="submit" disabled={loading}>
+                                {loading ? "Creating account..." : "Create account"}
+                            </button>
+                        </form>
+
+                        <p className="mt-4 text-sm text-[var(--muted)]">
+                            Already have access? <Link className="font-semibold text-[var(--ink)] underline underline-offset-4" to="/">Back to sign in</Link>
+                        </p>
                     </div>
-                    <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">Email</label>
-                        <input
-                            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
+                </section>
+
+                <aside className="order-1 border-b border-[var(--line)] bg-[var(--soft)] p-8 lg:order-2 lg:border-b-0 lg:border-l">
+                    <p className="label">Workflow</p>
+                    <h2 className="mt-3 max-w-xl text-4xl font-semibold leading-[0.97] tracking-tight">Employee registration keeps payment routing explicit.</h2>
+                    <div className="mt-4 space-y-2.5">
+                        {[
+                            "Register with wallet address",
+                            "Receive assigned tasks",
+                            "Submit proof for review",
+                            "Approved work gets payment logging",
+                        ].map((item) => (
+                            <div key={item} className="rounded-[10px] border border-[var(--line)] bg-white px-3 py-2.5 text-sm text-[var(--ink)]">
+                                {item}
+                            </div>
+                        ))}
                     </div>
-                    <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">Password</label>
-                        <input
-                            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-
-                    {error ? (
-                        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                            {error}
-                        </div>
-                    ) : null}
-
-                    <button
-                        className="w-full rounded-xl bg-slate-950 px-4 py-3 font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
-                        type="submit"
-                        disabled={loading}
-                    >
-                        {loading ? "Creating account..." : "Register"}
-                    </button>
-                </form>
-
-                <p className="mt-6 text-sm text-slate-500">
-                    Already have an account? <Link className="font-medium text-slate-950 underline" to="/">Login</Link>
-                </p>
+                </aside>
             </div>
         </div>
     );

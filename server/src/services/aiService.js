@@ -3,28 +3,28 @@ import Task from "../models/Task.js";
 export const calculateProductivity = async (employeeId) => {
   const tasks = await Task.find({ assignedTo: employeeId });
 
-  let completed = 0;
+  let approved = 0;
   let delayed = 0;
-  let active = 0;
+  let submitted = 0;
 
   tasks.forEach((task) => {
-    if (task.status === "Completed") {
-      completed += 1;
+    if (task.status === "Approved") {
+      approved += 1;
 
-      if (task.dueDate && task.completedAt && task.completedAt > task.dueDate) {
+      if (task.dueDate && task.approvedAt && task.approvedAt > task.dueDate) {
         delayed += 1;
       }
-    } else if (task.status === "In Progress") {
-      active += 1;
+    } else if (task.status === "Submitted") {
+      submitted += 1;
     }
   });
 
-  const score = completed * 10 - delayed * 5 + active * 2;
+  const score = approved * 10 - delayed * 5 + submitted * 2;
 
   return {
-    completed,
+    approved,
     delayed,
-    active,
+    submitted,
     score,
   };
 };
